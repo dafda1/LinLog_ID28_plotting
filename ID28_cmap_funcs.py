@@ -61,3 +61,36 @@ def get_ID28_style_cmap (linemap = plt.cm.binary,
     colors = np.vstack((colors1, colors2))
     
     return LinearSegmentedColormap.from_list("ID28", colors)
+
+def generate_cmap_tick_marks (cutoff, logpar):
+    "assumes cutoff is roughly 1000 and last order is roughly 1e6 (for now, wip)"
+    
+    pre_cutoff_intensities = np.linspace(0, cutoff, 5)
+    
+    minlog = int(np.log10(cutoff)) + 1
+    maxlog = int(np.log10(logpar*cutoff))
+    
+    post_cutoff_logs = np.arange(minlog, maxlog + 1)
+    
+    post_cutoff_intensities = np.append(10**post_cutoff_logs, logpar*cutoff)
+    
+    all_intensities = np.concatenate((pre_cutoff_intensities,
+                                      post_cutoff_intensities))
+    
+    tick_labels = ["%.0f" % val for val in pre_cutoff_intensities] +\
+                  [f"$10^{val}$" % val for val in post_cutoff_logs]
+    
+    tick_positions, _, _ = ID28_style_cmap_values(all_intensities, cutoff = cutoff)
+    
+    return tick_positions[:-1], tick_labels
+
+def generate_colorbar (mappable, cutoff, logpar):
+    ticks, labels = generate_cmap_tick_marks(cutoff, logpar)
+    
+    cbar = plt.colorbar(mappable)
+    cbar.set_ticks(ticks)
+    cbar.set_ticklabels(labels)
+    
+    cbar.set_label("Intensity (arb. units)")
+    
+    return cbar
