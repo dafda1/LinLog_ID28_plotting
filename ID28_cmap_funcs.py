@@ -29,19 +29,24 @@ def ID28_style_cmap_values (intensity, cutoff = None, logpar = None,
         if cutoff is None and logpar is None:
             raise ValueError("Must provide either 'cutoff' or 'logpar'.")
         elif cutoff is not None and logpar is not None:
-            raise ValueError("Must provide EITHER 'cutoff' or 'logpar', not both.")
+            Imax = cutoff*logpar
         
-        Imax = np.max(intensity)
+        
         
         if cutoff is None:
             print("Calculating cutoff from logpar and maximum intensity.")
-            cutoff = Imax*1.0/logpar
+            cutoff = np.max(intensity)*1.0/logpar
             print(f"cutoff = {cutoff}")
         
         elif logpar is None:
             print("Calculating logpar from logpar and maximum intensity.")
-            logpar = Imax*1.0/cutoff
+            logpar = np.max(intensity)*1.0/cutoff
             print(f"logpar = {logpar}")
+        
+        else:
+            print("Calculated maximum intensity from logpar and cutoff.")
+            Imax = cutoff*logpar
+            print(f"Imax = {Imax}")
         
         relative_intensity = intensity*1.0/cutoff
         
